@@ -95,7 +95,7 @@ const Nav = styled.nav<{ isOpen: boolean; isScrolled: boolean; isHomePage: boole
 const NavLink = styled(Link)<{ isActive: boolean; isScrolled: boolean; isHomePage: boolean }>`
   color: ${(props) => {
     if (!props.isHomePage) return props.isActive ? '#667eea' : '#333';
-    return props.isScrolled ? (props.isActive ? '#667eea' : '#333') : 'white';
+    return props.isScrolled ? (props.isActive ? '#667eea' : '#333') : '#c6c5c5ff';
   }};
   text-decoration: none;
   font-weight: 600;

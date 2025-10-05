@@ -25,12 +25,12 @@ import {
   HeroImage,
 } from './Home.styles';
 
-
 // import { useAppDispatch, useAppSelector } from '../../hooks';
 // import { fetchStatistics } from '../../store/slices/statisticsSlice';
 
 
 const Home: React.FC = () => {
+
   // const dispatch = useAppDispatch();
   // const { statistics, loading, error } = useAppSelector((state) => state.statistics);
 
@@ -42,6 +42,7 @@ const Home: React.FC = () => {
     <HomeContainer>
       <HeroSection>
         <HeroContent>
+          {}
 
         <HeroTitle>Your ultimate music management platform.</HeroTitle>
         <HeroSubtitle>

@@ -63,7 +63,7 @@ export const HomeContainer = styled.div`
  min-height: calc(100vh - 70px); 
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 2rem 1rem;
+  padding: 2rem 4rem;
   margin-top: -70px; /* Counteract the header space */
   padding-top: calc(70px + 2rem); /* Add header height to padding */
 `;
