@@ -183,13 +183,10 @@ const Header: React.FC = () => {
       setIsScrolled(scrollTop > 50);
     };
 
-    // Only add scroll listener if we're on the home page
     if (isHomePage) {
       window.addEventListener('scroll', handleScroll);
-      // Initial check
       handleScroll();
     } else {
-      // If not on home page, ensure scrolled state is true for white background
       setIsScrolled(true);
     }
 

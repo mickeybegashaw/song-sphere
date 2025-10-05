@@ -8,11 +8,12 @@ import Layout from "./components/common/layout";
 import Songs from "./pages/Songs/Songs";
 import Login from "./pages/Login/Login";
 import { useSession } from "../lib/authClient";
+import Statistics from "./pages/Stastics/Statistics";
 
 function App() {
-  const { data: session, isPending } = useSession(); 
+  const { data: session, isPending } = useSession();
   const user = session?.user;
-  console.log(user)
+  console.log(user);
 
   if (isPending) {
     return (
@@ -40,6 +41,10 @@ function App() {
           <Route
             path="songs"
             element={user ? <Songs /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="statistics"
+            element={user ? <Statistics /> : <Navigate to="/login" replace />}
           />
           <Route
             path="login"
