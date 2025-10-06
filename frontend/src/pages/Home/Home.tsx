@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import {
   HomeContainer,
   HeroSection,
@@ -7,12 +6,6 @@ import {
   CTAButtons,
   PrimaryButton,
   SecondaryButton,
-  StatsSection,
-  StatsGrid,
-  StatCard,
-  StatIcon,
-  StatNumber,
-  StatLabel,
   FeaturesSection,
   SectionTitle,
   FeaturesGrid,
@@ -20,31 +13,20 @@ import {
   FeatureIcon,
   FeatureTitle,
   FeatureDescription,
-  LoadingSpinner,
   HeroContent,
   HeroImage,
 } from './Home.styles';
 
-// import { useAppDispatch, useAppSelector } from '../../hooks';
-// import { fetchStatistics } from '../../store/slices/statisticsSlice';
 
 
 const Home: React.FC = () => {
-
-  // const dispatch = useAppDispatch();
-  // const { statistics, loading, error } = useAppSelector((state) => state.statistics);
-
-  // useEffect(() => {
-  //   dispatch(fetchStatistics());
-  // }, [dispatch]);
 
   return (
     <HomeContainer>
       <HeroSection>
         <HeroContent>
-          {}
 
-        <HeroTitle>Your ultimate music management platform.</HeroTitle>
+        <HeroTitle>Your ultimate music management platform. </HeroTitle>
         <HeroSubtitle>
           Organize, analyze, and discover insights about your music collection with beautiful visualizations and powerful tools.
 
@@ -63,45 +45,7 @@ const Home: React.FC = () => {
         <HeroImage src="/HeroSectionImage.svg" alt="Music Illustration" />
       </HeroSection>
 
-      {/* <StatsSection>
-        <SectionTitle>Music Collection Overview</SectionTitle>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem' }}>
-            <LoadingSpinner />
-          </div>
-        ) : error ? (
-          <div style={{ textAlign: 'center', color: '#ff6b6b' }}>
-            Error loading statistics: {error}
-          </div>
-        ) : (
-          <StatsGrid>
-            <StatCard>
-              <StatIcon>🎵</StatIcon>
-              <StatNumber>{statistics?.totalSongs || 0}</StatNumber>
-              <StatLabel>Total Songs</StatLabel>
-            </StatCard>
-            
-            <StatCard>
-              <StatIcon>👨‍🎤</StatIcon>
-              <StatNumber>{statistics?.totalArtists || 0}</StatNumber>
-              <StatLabel>Artists</StatLabel>
-            </StatCard>
-            
-            <StatCard>
-              <StatIcon>💿</StatIcon>
-              <StatNumber>{statistics?.totalAlbums || 0}</StatNumber>
-              <StatLabel>Albums</StatLabel>
-            </StatCard>
-            
-            <StatCard>
-              <StatIcon>🎼</StatIcon>
-              <StatNumber>{statistics?.totalGenres || 0}</StatNumber>
-              <StatLabel>Genres</StatLabel>
-            </StatCard>
-          </StatsGrid>
-        )}
-      </StatsSection> */}
-
+     
       <FeaturesSection>
         <SectionTitle>Powerful Features</SectionTitle>
         <FeaturesGrid>
