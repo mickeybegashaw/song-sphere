@@ -13,7 +13,6 @@ import Statistics from "./pages/Stastics/Statistics";
 function App() {
   const { data: session, isPending } = useSession();
   const user = session?.user;
-  console.log(user);
 
   if (isPending) {
     return (
