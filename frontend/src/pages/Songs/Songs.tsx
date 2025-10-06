@@ -79,13 +79,7 @@ const Songs = () => {
     return matchesGenre && matchesArtist && matchesSearch;
   });
 
-  // Get unique genres and artists for dropdowns
-  const uniqueGenres = [
-    "All",
-    ...new Set(songs.map((song) => song.genre).filter(Boolean)),
-  ];
   const uniqueArtists = ["All", ...new Set(songs.map((song) => song.artist))];
-
   if (loading) {
     return (
       <Container>
@@ -93,6 +87,7 @@ const Songs = () => {
       </Container>
     );
   }
+
 
   if (error) {
     return (
