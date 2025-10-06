@@ -42,7 +42,7 @@ const songsSlice = createSlice({
       state.error = null;
     },
     addSongSuccess(state, action: PayloadAction<Song>) {
-      state.songs.push(action.payload);
+      state.songs.unshift(action.payload);
       state.loading = false;
       state.error = null;
     },

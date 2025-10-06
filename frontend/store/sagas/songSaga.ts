@@ -28,7 +28,7 @@ function* fetchSongs():SagaIterator {
 function* addSong(action: PayloadAction<Omit<Song, "_id">>):SagaIterator {
   try {
     const response = yield call(API.post, "/songs", action.payload);
-    yield put(addSongSuccess(response.data));
+    yield put(addSongSuccess(response.data.data));
   } catch (err: any) {
     yield put(fetchSongsFailure(err?.message || "Failed to add song"));
   }

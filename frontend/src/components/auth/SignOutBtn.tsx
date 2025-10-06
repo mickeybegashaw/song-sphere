@@ -1,18 +1,19 @@
 import React from "react";
 import { signOut } from "../../../lib/authClient";
 import styled from "@emotion/styled";
+import { CiLogout } from "react-icons/ci";
 
 const Button = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #ef4444; /* Tailwind red-500 */
-  color: white;
-  border-radius: 0.375rem; /* Tailwind rounded-md */
+  color: black;
+  border-radius: 0.375rem; 
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
 
-  &:hover {
-    background-color: #dc2626; /* Tailwind red-600 */
-  }
+
 `;
 
 const SignOutButton: React.FC = () => {
@@ -24,7 +25,7 @@ const SignOutButton: React.FC = () => {
     }
   };
 
-  return <Button onClick={handleSignOut}>Sign Out</Button>;
+  return <Button onClick={handleSignOut}> <CiLogout/> <span>Sign Out</span></Button>;
 };
 
 export default SignOutButton;

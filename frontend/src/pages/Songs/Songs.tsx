@@ -3,7 +3,8 @@ import { selectAllSongs, selectStats, selectSongsLoading, selectSongsError } fro
 import { fetchSongsRequest } from "../../../store/slices/songSlice";
 import { useEffect, useState } from "react";
 import AddMusicModal from "../../components/modals/AddSongModal/AddSongModal";
-
+import { MdHeadset, MdMusicNote, MdAlbum } from "react-icons/md";
+import { FaGuitar, FaMicrophoneAlt } from "react-icons/fa";
 import {
   Container,
   Header,
@@ -34,7 +35,12 @@ import {
   ErrorMessage,
   HeaderActions,
   AddButton,
-  PlusIcon
+  PlusIcon,
+  ArtistIcon,
+  MusicIcon,
+  SongTitleWrapper,
+  MusicNoteIcon,
+  PlayIndicator
 
 } from "./Songs.style";
 const Songs = () => {
@@ -55,14 +61,19 @@ const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   }, [dispatch]);
 
   // Filter songs based on selections
-  const filteredSongs = songs.filter(song => {
-    const matchesGenre = selectedGenre === "All" || song.genre === selectedGenre;
-    const matchesArtist = selectedArtist === "All" || song.artist === selectedArtist;
-    const matchesSearch = song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         song.artist.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesGenre && matchesArtist && matchesSearch;
-  });
+ const filteredSongs = songs.filter((song) => {
+  const matchesGenre = selectedGenre === "All" || song.genre === selectedGenre;
+  const matchesArtist = selectedArtist === "All" || song.artist === selectedArtist;
+
+  const title = song.title?.toLowerCase() || "";
+  const artist = song.artist?.toLowerCase() || "";
+  const matchesSearch =
+    title.includes(searchTerm.toLowerCase()) ||
+    artist.includes(searchTerm.toLowerCase());
+
+  return matchesGenre && matchesArtist && matchesSearch;
+});
+
 
   // Get unique genres and artists for dropdowns
   const uniqueGenres = ["All", ...new Set(songs.map(song => song.genre).filter(Boolean))];
@@ -166,33 +177,62 @@ const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
       {/* Song List */}
       <SongList>
-        {filteredSongs.length === 0 ? (
-          <EmptyState>
-            <EmptyText>No songs found</EmptyText>
-            <EmptySubtext>
-              {songs.length === 0 
-                ? "Add your first track to get started!" 
-                : "Try adjusting your filters or search term"}
-            </EmptySubtext>
-          </EmptyState>
-        ) : (
-          <Grid>
-            {filteredSongs.map((song) => (
-              <SongCard key={song._id}>
-                <SongHeader>
-                  <SongTitle>{song.title}</SongTitle>
-                  {song.album && <AlbumBadge>{song.album}</AlbumBadge>}
-                </SongHeader>
-                <SongArtist>{song.artist}</SongArtist>
-                <SongMeta>
-                  {song.genre && <GenreTag>{song.genre}</GenreTag>}
-                </SongMeta>
-              </SongCard>
-            ))}
-          </Grid>
-        )}
-      </SongList>
-
+  {filteredSongs.length === 0 ? (
+    <EmptyState>
+      <MusicIcon>
+        <MdHeadset size={48} />
+      </MusicIcon>
+      <EmptyText>No songs found</EmptyText>
+      <EmptySubtext>
+        {songs.length === 0 
+          ? "Add your first track to get started!" 
+          : "Try adjusting your filters or search term"}
+      </EmptySubtext>
+    </EmptyState>
+  ) : (
+    <Grid>
+      {filteredSongs.map((song) => (
+        <SongCard key={song._id}>
+          <SongHeader>
+            <SongTitleWrapper>
+              <MusicNoteIcon>
+                <MdMusicNote size={16} />
+              </MusicNoteIcon>
+              <SongTitle>{song.title}</SongTitle>
+            </SongTitleWrapper>
+            {song.album && (
+              <AlbumBadge>
+                <MdAlbum size={12} />
+                {song.album}
+              </AlbumBadge>
+            )}
+          </SongHeader>
+          
+          <SongArtist>
+            <ArtistIcon>
+              <FaMicrophoneAlt size={12} />
+            </ArtistIcon>
+            {song.artist}
+          </SongArtist>
+          
+          <SongMeta>
+            {song.genre && (
+              <GenreTag>
+                <FaGuitar size={10} />
+                {song.genre}
+              </GenreTag>
+            )}
+            
+          </SongMeta>
+          
+          <PlayIndicator>
+            <MdHeadset size={18} />
+          </PlayIndicator>
+        </SongCard>
+      ))}
+    </Grid>
+  )}
+</SongList>
        <AddMusicModal 
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
