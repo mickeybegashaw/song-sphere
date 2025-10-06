@@ -25,12 +25,14 @@ export const auth = betterAuth({
     maxAge: 7 * 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
     storeSessionInDatabase:true,
-  },
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "localhost",
+  }},
 
 
-  baseURL: process.env.BACKEND_URL || "http://localhost:5000",
-  cookie:{
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  }
+  baseURL: process.env.BACKEND_URL || "http://localhost:5000"
+  
 });
