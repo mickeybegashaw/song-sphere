@@ -10,7 +10,8 @@ export const authClient = createAuthClient({
 export const signIn = async () => {
   await authClient.signIn.social({
   provider: "google",
-  callbackURL: import.meta.env.VITE_FRONTEND_URL+"/songs"
+  callbackURL: import.meta.env.VITE_FRONTEND_URL+"/songs",
+  errorCallbackURL: import.meta.env.VITE_FRONTEND_URL+"/",
 
 });
 
