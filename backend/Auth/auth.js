@@ -19,11 +19,12 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
-  trustedOrigins: [process.env.FRONTEND_URL || "http://localhost:5173"],
+  trustedOrigins: [process.env.FRONTEND_URL],
 
   session: {
     maxAge: 7 * 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
+    storeSessionInDatabase:true,
   },
   baseURL: process.env.BACKEND_URL || "http://localhost:5000",
 });
