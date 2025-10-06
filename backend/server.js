@@ -22,6 +22,7 @@ app.all('/api/auth/{*any}', toNodeHandler(auth));
 app.use(cookieParser());
 app.use(express.json());
 
+
 app.use("/api/songs", songRoute);
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
