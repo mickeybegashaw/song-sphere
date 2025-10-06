@@ -29,4 +29,8 @@ export const auth = betterAuth({
 
 
   baseURL: process.env.BACKEND_URL || "http://localhost:5000",
+  cookie:{
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  }
 });
