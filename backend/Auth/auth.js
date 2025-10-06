@@ -26,5 +26,7 @@ export const auth = betterAuth({
     updateAge: 24 * 60 * 60,
     storeSessionInDatabase:true,
   },
+
+
   baseURL: process.env.BACKEND_URL || "http://localhost:5000",
 });

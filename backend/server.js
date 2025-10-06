@@ -12,22 +12,26 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 
+app.use(cookieParser());
 
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173", 
-  credentials: true               
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"]
 }));
-app.all('/api/auth/{*any}', toNodeHandler(auth));
-app.use(cookieParser());
+
 app.use(express.json());
 
+app.all('/api/auth/{*any}', toNodeHandler(auth));
 
-app.use("/api/songs", songRoute);
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
+
+app.use("/api/songs", songRoute);
 
 
 // MongoDB connection
