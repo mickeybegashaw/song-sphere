@@ -19,7 +19,7 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
-  trustedOrigins: [process.env.FRONTEND_URL],
+  trustedOrigins: [process.env.FRONTEND_URL , process.env.BACKEND_URL],
 
   session: {
     maxAge: 7 * 24 * 60 * 60,
