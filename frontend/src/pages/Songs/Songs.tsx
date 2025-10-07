@@ -11,7 +11,14 @@ import {
 } from "../../../store/slices/songSlice";
 import { useEffect, useState } from "react";
 import AddMusicModal from "../../components/modals/AddSongModal/AddSongModal";
-import { MdHeadset, MdMusicNote, MdAlbum, MdDelete } from "react-icons/md";
+import {
+  MdHeadset,
+  MdMusicNote,
+  MdAlbum,
+  MdDelete,
+  MdEdit,
+  MdMoreVert,
+} from "react-icons/md";
 import { FaGuitar, FaMicrophoneAlt } from "react-icons/fa";
 import {
   Container,
@@ -49,8 +56,12 @@ import {
   SongTitleWrapper,
   MusicNoteIcon,
   PlayIndicator,
-  DeleteButton,
+  MenuItem,
+  DropdownMenu,
+  MenuButton,
 } from "./Songs.style";
+import EditSongModal from "../../components/modals/EditSongModal/EditSongModal";
+import type { Song } from "../../types";
 const Songs = () => {
   const dispatch = useAppDispatch();
   const songs = useAppSelector(selectAllSongs);
@@ -62,6 +73,21 @@ const Songs = () => {
   const [selectedArtist, setSelectedArtist] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+
+  const handleEditSong = (song: Song) => {
+    setSelectedSong(song);
+    setEditModalOpen(true);
+    setActiveMenu(null);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedSong(null);
+  };
+
 
   useEffect(() => {
     dispatch(fetchSongsRequest());
@@ -90,7 +116,11 @@ const Songs = () => {
       dispatch(deleteSongRequest(songId));
     }
   };
+  
 
+  const toggleMenu = (songId: string) => {
+    setActiveMenu(activeMenu === songId ? null : songId);
+  };
   if (loading) {
     return (
       <Container>
@@ -108,7 +138,7 @@ const Songs = () => {
   }
 
   return (
-    <Container>
+    <Container onClick={() => setActiveMenu(null)}>
       <Header>
         <Title>🎵 Your Music Library</Title>
         <HeaderActions>
@@ -198,18 +228,38 @@ const Songs = () => {
         ) : (
           <Grid>
             {filteredSongs.map((song) => (
-              <SongCard key={song._id}>
-                <DeleteButton
+              <SongCard onClick={() => setActiveMenu(null)} key={song._id}>
+                <MenuButton
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteSong(song?._id);
+                    toggleMenu(song._id!);
                   }}
-                  title="Delete song"
                   type="button"
-                  disabled={loading}
+                  title="Actions"
                 >
-                  <MdDelete size={16} />
-                </DeleteButton>
+                  <MdMoreVert size={20} />
+                </MenuButton>
+
+                {/* Dropdown Menu */}
+                {activeMenu === song._id && (
+                  <DropdownMenu onClick={(e) => e.stopPropagation()}>
+                    <MenuItem
+                      onClick={() => handleEditSong(song)}
+                      className="edit"
+                    >
+                      <MdEdit size={16} />
+                      Edit Song
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => handleDeleteSong(song._id!)}
+                      className="delete"
+                    >
+                      <MdDelete size={16} />
+                      Delete Song
+                    </MenuItem>
+                  </DropdownMenu>
+                )}
+
                 <SongHeader>
                   <SongTitleWrapper>
                     <MusicNoteIcon>
@@ -253,6 +303,12 @@ const Songs = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
       />
+
+      <EditSongModal 
+    isOpen={editModalOpen}
+    onClose={handleCloseEditModal}
+    song={selectedSong}
+  />
     </Container>
   );
 };

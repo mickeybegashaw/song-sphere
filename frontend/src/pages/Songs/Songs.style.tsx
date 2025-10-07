@@ -246,44 +246,6 @@ export const SongTitleWrapper = styled.div`
   flex: 1;
 `;
 
-export const SongCard = styled.div`
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 1px solid #f8f9fa;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
-    border-color: #e0e7ff;
-    
-   
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    transform: scaleX(0);
-    transition: transform 0.5s ease;
-  }
-
-  &:hover::before {
-    transform: scaleX(1);
-
-  }
-`;
-
 export const SongHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -302,6 +264,9 @@ export const SongTitle = styled.h3`
 `;
 
 export const AlbumBadge = styled.span`
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
   background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
   color: #4b5563;
   font-size: 0.7rem;
@@ -352,11 +317,132 @@ export const Duration = styled.span`
   align-items: center;
   gap: 0.3rem;
 `;
+// Menu Components
+export const MenuButton = styled.button`
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #544d4cff;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: scale(1);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  
+  &:hover {
+    transform: scale(1.2);
+    color: #374151;
+  }rgba(26, 29, 33, 1)
 
+ 
+`;
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  top: 3rem;
+  right: 0.75rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 30;
+  min-width: 150px;
+  animation: slideDown 0.2s ease-out;
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+export const MenuItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  background: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  color: #374151;
+
+  &:hover {
+    background: #f3f4f6;
+    
+    &.edit {
+      color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+    
+    &.delete {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  & + & {
+    margin-top: 0.25rem;
+  }
+`;
+
+// Update SongCard to accommodate menu
+export const SongCard = styled.div`
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #f8f9fa;
+  position: relative;
+  overflow: visible; // Changed from hidden to visible for dropdown
+  background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+    border-color: #e0e7ff;
+  
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+`;
+
+// Update PlayIndicator position
 export const PlayIndicator = styled.div`
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  right: 3rem; // Make space for menu button
   color: #667eea;
   background: rgba(102, 126, 234, 0.1);
   padding: 0.4rem;
@@ -367,8 +453,9 @@ export const PlayIndicator = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
 `;
-
 // Enhanced Empty State
 export const EmptyState = styled.div`
   text-align: center;

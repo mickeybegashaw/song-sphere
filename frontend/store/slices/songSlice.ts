@@ -27,7 +27,6 @@ const songsSlice = createSlice({
       state.error = null;
     },
     updateSongRequest(state, _action: PayloadAction<Song>) {
-      state.loading = true;
       state.error = null;
     },
     deleteSongRequest(state, _action: PayloadAction<string>) {

@@ -38,7 +38,7 @@ function* updateSong(action: PayloadAction<Song>):SagaIterator {
   try {
     const { _id, ...rest } = action.payload;
     const response = yield call(API.put, `/songs/${_id}`, rest);
-    yield put(updateSongSuccess(response.data));
+    yield put(updateSongSuccess(response.data.data));
   } catch (err: any) {
     yield put(fetchSongsFailure(err?.message || "Failed to update song"));
   }
