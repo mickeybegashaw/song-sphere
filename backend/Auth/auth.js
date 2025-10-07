@@ -27,10 +27,11 @@ export const auth = betterAuth({
     storeSessionInDatabase:true,
   },
   advanced:{
-  crossSubDomainCookies:{
-    enabled:true,
-    domain: ".onrender.com",
-  }
+ 
+  defaultCookieAttributes:{
+    sameSite: "none",
+    secure: true,
+  },
   }
 ,
 
