@@ -34,7 +34,7 @@ export const auth = betterAuth({
   advanced:{
   crossSubDomainCookies:{
     enabled:true,
-    domain: "song-sphere-2.onrender.com",
+    domain: "song-sphere-demo.vercel.app",
   }
   }
 ,
