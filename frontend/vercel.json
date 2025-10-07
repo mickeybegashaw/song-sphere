@@ -3,10 +3,6 @@
     {
       "source": "/:match*",
       "destination": "/index.html"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "https://song-sphere-2.onrender.com/api/:path*"
     }
   ]
 }

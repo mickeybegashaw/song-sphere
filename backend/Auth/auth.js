@@ -31,7 +31,13 @@ export const auth = betterAuth({
       sameSite: "lax",
       domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "localhost",
   }},
-
+  advanced:{
+  crossSubDomainCookies:{
+    enabled:true,
+    domain: ".onrender.com",
+  }
+  }
+,
 
   baseURL: process.env.BACKEND_URL || "http://localhost:5000"
   
