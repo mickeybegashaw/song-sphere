@@ -205,6 +205,27 @@ export const MusicIcon = styled.div`
   opacity: 0.7;
 `;
 
+export const DeleteButton = styled.button`
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.1);
+  }
+`;
+
 export const MusicNoteIcon = styled.div`
   color: #667eea;
   margin-right: 0.5rem;
@@ -212,7 +233,7 @@ export const MusicNoteIcon = styled.div`
   align-items: center;
 `;
 
-export const ArtistIcon = styled.div`
+export const ArtistIcon = styled.span`
   color: #764ba2;
   margin-right: 0.5rem;
   display: flex;

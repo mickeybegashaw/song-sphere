@@ -31,7 +31,6 @@ const songsSlice = createSlice({
       state.error = null;
     },
     deleteSongRequest(state, _action: PayloadAction<string>) {
-      state.loading = true;
       state.error = null;
     },
 

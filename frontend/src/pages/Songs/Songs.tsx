@@ -5,10 +5,13 @@ import {
   selectSongsLoading,
   selectSongsError,
 } from "../../../store/select";
-import { fetchSongsRequest } from "../../../store/slices/songSlice";
+import {
+  deleteSongRequest,
+  fetchSongsRequest,
+} from "../../../store/slices/songSlice";
 import { useEffect, useState } from "react";
 import AddMusicModal from "../../components/modals/AddSongModal/AddSongModal";
-import { MdHeadset, MdMusicNote, MdAlbum } from "react-icons/md";
+import { MdHeadset, MdMusicNote, MdAlbum, MdDelete } from "react-icons/md";
 import { FaGuitar, FaMicrophoneAlt } from "react-icons/fa";
 import {
   Container,
@@ -46,6 +49,7 @@ import {
   SongTitleWrapper,
   MusicNoteIcon,
   PlayIndicator,
+  DeleteButton,
 } from "./Songs.style";
 const Songs = () => {
   const dispatch = useAppDispatch();
@@ -80,6 +84,13 @@ const Songs = () => {
   });
 
   const uniqueArtists = ["All", ...new Set(songs.map((song) => song.artist))];
+
+  const handleDeleteSong = (songId: string) => {
+    if (window.confirm("Are you sure you want to delete this song?")) {
+      dispatch(deleteSongRequest(songId));
+    }
+  };
+
   if (loading) {
     return (
       <Container>
@@ -87,7 +98,6 @@ const Songs = () => {
       </Container>
     );
   }
-
 
   if (error) {
     return (
@@ -189,6 +199,17 @@ const Songs = () => {
           <Grid>
             {filteredSongs.map((song) => (
               <SongCard key={song._id}>
+                <DeleteButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteSong(song?._id);
+                  }}
+                  title="Delete song"
+                  type="button"
+                  disabled={loading}
+                >
+                  <MdDelete size={16} />
+                </DeleteButton>
                 <SongHeader>
                   <SongTitleWrapper>
                     <MusicNoteIcon>
