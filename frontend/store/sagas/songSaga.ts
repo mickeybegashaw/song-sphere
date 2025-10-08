@@ -1,4 +1,4 @@
-import { call, put, takeLatest, all } from "redux-saga/effects";
+import { call, put, takeLatest } from "redux-saga/effects";
 import API from "../api/axios";
 import {
   fetchSongsRequest,
@@ -15,8 +15,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Song } from "../../src/types";
 import type { SagaIterator } from "redux-saga";
 
-
-function* fetchSongs():SagaIterator {
+function* fetchSongs(): SagaIterator {
   try {
     const response = yield call(API.get, "/songs");
     yield put(fetchSongsSuccess(response.data.data));
@@ -25,7 +24,7 @@ function* fetchSongs():SagaIterator {
   }
 }
 
-function* addSong(action: PayloadAction<Omit<Song, "_id">>):SagaIterator {
+function* addSong(action: PayloadAction<Omit<Song, "_id">>): SagaIterator {
   try {
     const response = yield call(API.post, "/songs", action.payload);
     yield put(addSongSuccess(response.data.data));
@@ -34,7 +33,7 @@ function* addSong(action: PayloadAction<Omit<Song, "_id">>):SagaIterator {
   }
 }
 
-function* updateSong(action: PayloadAction<Song>):SagaIterator {
+function* updateSong(action: PayloadAction<Song>): SagaIterator {
   try {
     const { _id, ...rest } = action.payload;
     const response = yield call(API.put, `/songs/${_id}`, rest);
@@ -44,7 +43,7 @@ function* updateSong(action: PayloadAction<Song>):SagaIterator {
   }
 }
 
-function* deleteSong(action: PayloadAction<string>):SagaIterator {
+function* deleteSong(action: PayloadAction<string>): SagaIterator {
   try {
     yield call(API.delete, `/songs/${action.payload}`);
     yield put(deleteSongSuccess(action.payload));
@@ -53,13 +52,10 @@ function* deleteSong(action: PayloadAction<string>):SagaIterator {
   }
 }
 
-/* watchers */
-
-export default function* rootSaga():SagaIterator {
-  yield all([
-    takeLatest(fetchSongsRequest.type, fetchSongs),
-    takeLatest(addSongRequest.type, addSong),
-    takeLatest(updateSongRequest.type, updateSong),
-    takeLatest(deleteSongRequest.type, deleteSong),
-  ]);
+// watchers
+export function* watchSongs(): SagaIterator {
+  yield takeLatest(fetchSongsRequest.type, fetchSongs);
+  yield takeLatest(addSongRequest.type, addSong);
+  yield takeLatest(updateSongRequest.type, updateSong);
+  yield takeLatest(deleteSongRequest.type, deleteSong);
 }

@@ -1,5 +1,14 @@
-import { useSelector } from 'react-redux';
-import { selectStats } from '../../../store/select';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import {
+  selectStats,
+  selectStatsLoading,
+  selectStatsError,
+  selectGenreStats,
+  selectArtistStats,
+  selectTopArtists
+} from '../../../store/select';
+import { fetchStatsRequest } from '../../../store/slices/statSlice';
 import {
   Container,
   Title,
@@ -17,57 +26,105 @@ import {
   SectionTitle,
   GenreBar,
   BarFill,
-  BarLabel
+  BarLabel,
+  LoadingContainer,
+  ErrorContainer,
+  EmptyState,
+  RefreshButton,
 } from './Statistics.style';
 
 const Statistics = () => {
+  const dispatch = useDispatch();
   const stats = useSelector(selectStats);
+  const loading = useSelector(selectStatsLoading);
+  const error = useSelector(selectStatsError);
+  const genreStats = useSelector(selectGenreStats);
+  const artistStats = useSelector(selectArtistStats);
+  const topArtists = useSelector(selectTopArtists);
+  useEffect(() => {
+    dispatch(fetchStatsRequest());
+  }, [dispatch]);
 
-  // Convert songsPerGenre to array and sort
-  const genreStats = Object.entries(stats.songsPerGenre)
-    .map(([genre, count]) => ({
-      genre,
-      count,
-      percentage: (count / stats.totalSongs) * 100
-    }))
-    .sort((a, b) => b.count - a.count);
+  const handleRefresh = () => {
+    dispatch(fetchStatsRequest());
+  };
 
-  // Convert songsPerArtist to array and sort
-  const artistStats = Object.entries(stats.songsPerArtist)
-    .map(([artist, count]) => ({
-      artist,
-      count
-    }))
-    .sort((a, b) => b.count - a.count);
+  // Show loading state
+  if (loading && !stats) {
+    return (
+      <Container>
+        <Title>📊 Music Library Statistics</Title>
+        <LoadingContainer>
+          <div className="spinner"></div>
+          <p>Loading your music statistics...</p>
+        </LoadingContainer>
+      </Container>
+    );
+  }
 
-  // Get top artists (most songs)
-  const topArtists = artistStats.slice(0, 5);
+  // Show error state
+  if (error && !stats) {
+    return (
+      <Container>
+        <Title>📊 Music Library Statistics</Title>
+        <ErrorContainer>
+          <h3>😔 Unable to Load Statistics</h3>
+          <p>{error}</p>
+          <RefreshButton onClick={handleRefresh}>
+            Try Again
+          </RefreshButton>
+        </ErrorContainer>
+      </Container>
+    );
+  }
 
+  // Show empty state when no stats or no songs
+  if (!stats || stats.total.songs === 0) {
+    return (
+      <Container>
+        <Title>📊 Music Library Statistics</Title>
+        <EmptyState>
+          <h3>🎵 No Songs Yet</h3>
+          <p>Your music library is empty. Add some songs to see amazing statistics!</p>
+          <p>Start by adding your favorite tracks to build your personal music collection.</p>
+        </EmptyState>
+      </Container>
+    );
+  }
+
+  // Calculate additional statistics
+  const artistsWithOneSong = artistStats.filter(artist => artist.count === 1).length;
+  const averageSongsPerArtist = (stats.total.songs / stats.total.artists).toFixed(1);
+  const averageAlbumsPerArtist = (stats.total.albums / stats.total.artists).toFixed(1);
+  const mostCommonGenre = genreStats[0];
+  const mostProductiveArtist = artistStats[0];
 
   return (
     <Container>
-      <Title>📊 Music Library Statistics</Title>
+      <Title>📊 Your Music Library Statistics</Title>
 
       {/* Overview Stats */}
+      <SectionTitle>📈 Overview</SectionTitle>
       <StatsGrid>
         <StatCard>
-          <StatNumber>{stats.totalSongs}</StatNumber>
+          <StatNumber>{stats.total.songs}</StatNumber>
           <StatLabel>Total Songs</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats.artists}</StatNumber>
+          <StatNumber>{stats.total.artists}</StatNumber>
           <StatLabel>Unique Artists</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats.albums}</StatNumber>
+          <StatNumber>{stats.total.albums}</StatNumber>
           <StatLabel>Albums</StatLabel>
         </StatCard>
         <StatCard>
-          <StatNumber>{stats.genres}</StatNumber>
+          <StatNumber>{stats.total.genres}</StatNumber>
           <StatLabel>Genres</StatLabel>
         </StatCard>
       </StatsGrid>
 
+      {/* Main Charts Grid */}
       <ChartGrid>
         {/* Genre Distribution */}
         <ChartContainer>
@@ -77,7 +134,9 @@ const Statistics = () => {
               <GenreBar key={stat.genre}>
                 <BarLabel>{stat.genre}</BarLabel>
                 <BarFill percentage={stat.percentage}>
-                  <span>{stat.count} songs ({stat.percentage.toFixed(1)}%)</span>
+                  <span className="bar-text">
+                    {stat.count} song{stat.count !== 1 ? 's' : ''} ({stat.percentage.toFixed(1)}%)
+                  </span>
                 </BarFill>
               </GenreBar>
             ))}
@@ -88,9 +147,11 @@ const Statistics = () => {
         <ChartContainer>
           <ChartTitle>👨‍🎤 Top Artists</ChartTitle>
           <ListContainer>
-            {topArtists.map((artist) => (
+            {topArtists.map((artist, index) => (
               <ListItem key={artist.artist}>
-                <ListLabel>{artist.artist}</ListLabel>
+                <ListLabel>
+                  <span className="rank">#{index + 1}</span> {artist.artist}
+                </ListLabel>
                 <ListValue>
                   {artist.count} song{artist.count !== 1 ? 's' : ''}
                 </ListValue>
@@ -100,7 +161,7 @@ const Statistics = () => {
         </ChartContainer>
       </ChartGrid>
 
-      {/* Artist Statistics */}
+      {/* Artist Details */}
       <SectionTitle>🎤 Artist Details</SectionTitle>
       <ChartGrid>
         {artistStats.slice(0, 6).map((artist) => (
@@ -112,65 +173,138 @@ const Statistics = () => {
                 <ListValue>{artist.count}</ListValue>
               </ListItem>
               <ListItem>
+                <ListLabel>Albums</ListLabel>
+                <ListValue>{artist.albumCount}</ListValue>
+              </ListItem>
+              <ListItem>
                 <ListLabel>Library Share</ListLabel>
-                <ListValue>{((artist.count / stats.totalSongs) * 100).toFixed(1)}%</ListValue>
+                <ListValue>{((artist.count / stats.total.songs) * 100).toFixed(1)}%</ListValue>
+              </ListItem>
+              <ListItem>
+                <ListLabel>Avg Songs/Album</ListLabel>
+                <ListValue>{(artist.count / artist.albumCount).toFixed(1)}</ListValue>
               </ListItem>
             </ListContainer>
           </ChartContainer>
         ))}
       </ChartGrid>
 
-      {/* Additional Stats */}
-      <SectionTitle>📈 Additional Statistics</SectionTitle>
+      {/* Additional Statistics */}
+      <SectionTitle>📊 Additional Insights</SectionTitle>
       <ChartGrid>
+        {/* Most Productive Artist */}
         <ChartContainer>
           <ChartTitle>🏆 Most Productive Artist</ChartTitle>
           <ListContainer>
-            {artistStats[0] && (
-              <ListItem>
-                <ListLabel>{artistStats[0].artist}</ListLabel>
-                <ListValue>
-                  {artistStats[0].count} songs ({(artistStats[0].count / stats.totalSongs * 100).toFixed(1)}% of library)
-                </ListValue>
-              </ListItem>
+            {mostProductiveArtist && (
+              <>
+                <ListItem highlight>
+                  <ListLabel>{mostProductiveArtist.artist}</ListLabel>
+                  <ListValue>
+                    {mostProductiveArtist.count} songs ({(mostProductiveArtist.count / stats.total.songs * 100).toFixed(1)}%)
+                  </ListValue>
+                </ListItem>
+                <ListItem>
+                  <ListLabel>Albums</ListLabel>
+                  <ListValue>{mostProductiveArtist.albumCount}</ListValue>
+                </ListItem>
+                <ListItem>
+                  <ListLabel>Songs per Album</ListLabel>
+                  <ListValue>{(mostProductiveArtist.count / mostProductiveArtist.albumCount).toFixed(1)}</ListValue>
+                </ListItem>
+              </>
             )}
           </ListContainer>
         </ChartContainer>
 
+        {/* Genre Insights */}
         <ChartContainer>
-          <ChartTitle>🎭 Most Common Genre</ChartTitle>
+          <ChartTitle>🎭 Genre Insights</ChartTitle>
           <ListContainer>
-            {genreStats[0] && (
-              <ListItem>
-                <ListLabel>{genreStats[0].genre}</ListLabel>
-                <ListValue>
-                  {genreStats[0].count} songs ({genreStats[0].percentage.toFixed(1)}%)
-                </ListValue>
-              </ListItem>
+            {mostCommonGenre && (
+              <>
+                <ListItem highlight>
+                  <ListLabel>Most Common</ListLabel>
+                  <ListValue>
+                    {mostCommonGenre.genre} ({mostCommonGenre.percentage.toFixed(1)}%)
+                  </ListValue>
+                </ListItem>
+                <ListItem>
+                  <ListLabel>Genre Variety</ListLabel>
+                  <ListValue>{stats.total.genres} genres</ListValue>
+                </ListItem>
+                <ListItem>
+                  <ListLabel>Avg Songs/Genre</ListLabel>
+                  <ListValue>{(stats.total.songs / stats.total.genres).toFixed(1)}</ListValue>
+                </ListItem>
+              </>
             )}
           </ListContainer>
         </ChartContainer>
 
+        {/* Distribution Stats */}
         <ChartContainer>
-          <ChartTitle>📊 Distribution</ChartTitle>
+          <ChartTitle>📈 Distribution</ChartTitle>
           <ListContainer>
             <ListItem>
               <ListLabel>Songs per Artist</ListLabel>
-              <ListValue>{(stats.totalSongs / stats.artists).toFixed(1)} avg</ListValue>
+              <ListValue>{averageSongsPerArtist} avg</ListValue>
             </ListItem>
             <ListItem>
-              <ListLabel>Unique Genres</ListLabel>
-              <ListValue>{stats.genres}</ListValue>
+              <ListLabel>Albums per Artist</ListLabel>
+              <ListValue>{averageAlbumsPerArtist} avg</ListValue>
             </ListItem>
             <ListItem>
               <ListLabel>Artists with 1 song</ListLabel>
               <ListValue>
-                {artistStats.filter(a => a.count === 1).length} artists
+                {artistsWithOneSong} ({((artistsWithOneSong / stats.total.artists) * 100).toFixed(1)}%)
+              </ListValue>
+            </ListItem>
+            <ListItem>
+              <ListLabel>Genre Coverage</ListLabel>
+              <ListValue>
+                {((genreStats.length / stats.total.genres) * 100).toFixed(1)}% displayed
               </ListValue>
             </ListItem>
           </ListContainer>
         </ChartContainer>
       </ChartGrid>
+
+      {/* Album Statistics */}
+      {Object.keys(stats.songsPerAlbum).length > 0 && (
+        <>
+          <SectionTitle>💿 Album Statistics</SectionTitle>
+          <ChartGrid>
+            {Object.entries(stats.songsPerAlbum)
+              .sort(([, a], [, b]) => b - a)
+              .slice(0, 4)
+              .map(([album, count]) => (
+                <ChartContainer key={album}>
+                  <ChartTitle>{album}</ChartTitle>
+                  <ListContainer>
+                    <ListItem>
+                      <ListLabel>Total Songs</ListLabel>
+                      <ListValue>{count}</ListValue>
+                    </ListItem>
+                    <ListItem>
+                      <ListLabel>Library Share</ListLabel>
+                      <ListValue>{((count / stats.total.songs) * 100).toFixed(1)}%</ListValue>
+                    </ListItem>
+                    <ListItem>
+                      <ListLabel>Album Artist</ListLabel>
+                      <ListValue>
+                        {artistStats.find(a => 
+                          Object.keys(stats.albumsPerArtist).includes(a.artist) && 
+                          stats.albumsPerArtist[a.artist] > 0
+                        )?.artist || 'Various'}
+                      </ListValue>
+                    </ListItem>
+                  </ListContainer>
+                </ChartContainer>
+              ))}
+          </ChartGrid>
+        </>
+      )}
     </Container>
   );
 };

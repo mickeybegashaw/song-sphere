@@ -1,7 +1,6 @@
 import { useAppSelector, useAppDispatch } from "../../../store/hooks/hooks";
 import {
   selectAllSongs,
-  selectStats,
   selectSongsLoading,
   selectSongsError,
 } from "../../../store/select";
@@ -24,10 +23,6 @@ import {
   Container,
   Header,
   Title,
-  StatsGrid,
-  StatCard,
-  StatNumber,
-  StatLabel,
   FiltersContainer,
   SearchInput,
   FilterGroup,
@@ -46,7 +41,6 @@ import {
   EmptyState,
   EmptyText,
   EmptySubtext,
-  LoadingSpinner,
   ErrorMessage,
   HeaderActions,
   AddButton,
@@ -62,10 +56,11 @@ import {
 } from "./Songs.style";
 import EditSongModal from "../../components/modals/EditSongModal/EditSongModal";
 import type { Song } from "../../types";
+import SongsSkeleton from "../../components/skeletons/SongSkeleton";
+
 const Songs = () => {
   const dispatch = useAppDispatch();
   const songs = useAppSelector(selectAllSongs);
-  const stats = useAppSelector(selectStats);
   const loading = useAppSelector(selectSongsLoading);
   const error = useAppSelector(selectSongsError);
 
@@ -74,7 +69,7 @@ const Songs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   const handleEditSong = (song: Song) => {
@@ -87,7 +82,6 @@ const Songs = () => {
     setEditModalOpen(false);
     setSelectedSong(null);
   };
-
 
   useEffect(() => {
     dispatch(fetchSongsRequest());
@@ -110,22 +104,21 @@ const Songs = () => {
   });
 
   const uniqueArtists = ["All", ...new Set(songs.map((song) => song.artist))];
+  const uniqueGenres = ["All", ...new Set(songs.map((song) => song.genre).filter(Boolean))];
 
   const handleDeleteSong = (songId: string) => {
     if (window.confirm("Are you sure you want to delete this song?")) {
       dispatch(deleteSongRequest(songId));
     }
   };
-  
 
   const toggleMenu = (songId: string) => {
     setActiveMenu(activeMenu === songId ? null : songId);
   };
+
   if (loading) {
     return (
-      <Container>
-        <LoadingSpinner>🎵 Loading your songs...</LoadingSpinner>
-      </Container>
+     <SongsSkeleton/>
     );
   }
 
@@ -149,25 +142,6 @@ const Songs = () => {
         </HeaderActions>
       </Header>
 
-      {/* Stats Overview */}
-      <StatsGrid>
-        <StatCard>
-          <StatNumber>{stats.totalSongs}</StatNumber>
-          <StatLabel>Total Songs</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.artists}</StatNumber>
-          <StatLabel>Artists</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.albums}</StatNumber>
-          <StatLabel>Albums</StatLabel>
-        </StatCard>
-        <StatCard>
-          <StatNumber>{stats.genres}</StatNumber>
-          <StatLabel>Genres</StatLabel>
-        </StatCard>
-      </StatsGrid>
 
       {/* Filters and Search */}
       <FiltersContainer>
@@ -185,8 +159,18 @@ const Songs = () => {
           >
             {uniqueArtists.map((artist) => (
               <option key={artist} value={artist}>
-                {artist}{" "}
-                {artist !== "All" && `(${stats.songsPerArtist?.[artist] ?? 0})`}
+                {artist}
+              </option>
+            ))}
+          </FilterSelect>
+
+          <FilterSelect
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
+          >
+            {uniqueGenres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
               </option>
             ))}
           </FilterSelect>
@@ -305,10 +289,10 @@ const Songs = () => {
       />
 
       <EditSongModal 
-    isOpen={editModalOpen}
-    onClose={handleCloseEditModal}
-    song={selectedSong}
-  />
+        isOpen={editModalOpen}
+        onClose={handleCloseEditModal}
+        song={selectedSong}
+      />
     </Container>
   );
 };

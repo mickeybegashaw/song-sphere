@@ -2,27 +2,42 @@ import { createSelector } from "reselect";
 import type { RootState } from "../store/index";
 
 const selectSongsState = (state: RootState) => state.songs;
+const selectStatisticsState = (state: RootState) => state.statistics;
 
+// Songs selectors
 export const selectAllSongs = (state: RootState) => state.songs.songs;
 export const selectSongsLoading = (state: RootState) => selectSongsState(state).loading;
 export const selectSongsError = (state: RootState) => selectSongsState(state).error;
 
-export const selectStats = createSelector([selectAllSongs], (songs) => {
-  const totalSongs = songs.length;
-  const artists = new Set(songs.map(s => s.artist)).size;
-  const albums = new Set(songs.map(s => s.album ?? "—")).size;
-  const genres = new Set(songs.map(s => s.genre ?? "—")).size;
+// Statistics selectors
+export const selectStats = (state: RootState) => selectStatisticsState(state).data;
+export const selectStatsLoading = (state: RootState) => selectStatisticsState(state).loading;
+export const selectStatsError = (state: RootState) => selectStatisticsState(state).error;
 
-  const songsPerGenre = songs.reduce<Record<string, number>>((acc, s) => {
-    const g = s.genre ?? "Unknown";
-    acc[g] = (acc[g] || 0) + 1;
-    return acc;
-  }, {});
-
-  const songsPerArtist = songs.reduce<Record<string, number>>((acc, s) => {
-    acc[s.artist] = (acc[s.artist] || 0) + 1;
-    return acc;
-  }, {});
-
-  return { totalSongs, artists, albums, genres, songsPerGenre, songsPerArtist };
+export const selectGenreStats = createSelector([selectStats], (stats) => {
+  if (!stats?.songsPerGenre || !stats.total?.songs) return [];
+  
+  return Object.entries(stats.songsPerGenre)
+    .map(([genre, count]) => ({
+      genre,
+      count,
+      percentage: (count / stats.total.songs) * 100
+    }))
+    .sort((a, b) => b.count - a.count);
 });
+
+export const selectArtistStats = createSelector([selectStats], (stats) => {
+  if (!stats?.songsPerArtist || !stats.albumsPerArtist) return [];
+  
+  return Object.entries(stats.songsPerArtist)
+    .map(([artist, count]) => ({
+      artist,
+      count,
+      albumCount: stats.albumsPerArtist[artist] || 0
+    }))
+    .sort((a, b) => b.count - a.count);
+});
+
+export const selectTopArtists = createSelector([selectArtistStats], (artists) => 
+  artists.slice(0, 5)
+);
