@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import songRoute from "./routes/songRoute/songRoutes.js"
+import statsRoute from "./routes/statsticsRoute/statsticsRoute.js"
 import { auth } from "./Auth/auth.js";
 import { toNodeHandler } from "better-auth/node";
 import cookieParser from "cookie-parser";
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/songs", songRoute);
+app.use("/api/stats" , statsRoute)
 
 
 // MongoDB connection
